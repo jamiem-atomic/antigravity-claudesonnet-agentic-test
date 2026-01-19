@@ -1,0 +1,110 @@
+<div class="container section">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl">Admin Dashboard</h1>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex border-b mb-8" style="border-color: var(--border);">
+        <button (click)="setActiveTab('moderation')" class="px-6 py-3 font-semibold transition-colors border-b-2"
+            [class.border-primary]="activeTab === 'moderation'" [class.text-primary]="activeTab === 'moderation'"
+            [class.border-transparent]="activeTab !== 'moderation'" [class.text-secondary]="activeTab !== 'moderation'">
+            Moderation Queue ({{ pendingListings.length }})
+        </button>
+        <button (click)="setActiveTab('users')" class="px-6 py-3 font-semibold transition-colors border-b-2"
+            [class.border-primary]="activeTab === 'users'" [class.text-primary]="activeTab === 'users'"
+            [class.border-transparent]="activeTab !== 'users'" [class.text-secondary]="activeTab !== 'users'">
+            User Management
+        </button>
+    </div>
+
+    <!-- Moderation Content -->
+    <div *ngIf="activeTab === 'moderation'">
+        <div *ngIf="isLoading" class="text-center py-12">
+            <p class="text-secondary">Loading moderation queue...</p>
+        </div>
+
+        <div *ngIf="!isLoading && pendingListings.length === 0" class="text-center py-12 bg-surface rounded">
+            <p class="text-secondary">No listings pending approval.</p>
+        </div>
+
+        <div *ngIf="!isLoading && pendingListings.length > 0" class="flex flex-col gap-4">
+            <div *ngFor="let listing of pendingListings" class="card p-4 flex flex-col md:flex-row gap-6">
+                <div class="w-full md:w-48 aspect-video bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                    <img *ngIf="listing.photos?.length" [src]="listing.photos[0]" class="w-full h-full object-cover">
+                </div>
+
+                <div class="flex-grow">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h3 class="text-lg font-bold mb-0">{{ listing.year }} {{ listing.make }} {{ listing.model }}
+                            </h3>
+                            <p class="text-sm text-secondary">By {{ listing.sellerName }} - ${{ listing.price | number
+                                }}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button (click)="approveListing(listing.id)"
+                                class="btn btn-primary py-1 px-4 text-sm bg-green-600 hover:bg-green-700">Approve</button>
+                            <button (click)="openRejectModal(listing.id)"
+                                class="btn btn-outline py-1 px-4 text-sm border-red-200 text-red-600 hover:bg-red-50">Reject</button>
+                        </div>
+                    </div>
+                    <p class="text-sm line-clamp-2 text-secondary">{{ listing.description }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Management Content -->
+    <div *ngIf="activeTab === 'users'">
+        <div class="mb-6">
+            <input type="text" [(ngModel)]="userSearch" (ngModelChange)="loadUsers()" class="input w-64"
+                placeholder="Search users by name or email...">
+        </div>
+
+        <div class="card p-0 overflow-hidden">
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-surface-hover text-sm font-semibold text-secondary">
+                    <tr>
+                        <th class="p-4">Name</th>
+                        <th class="p-4">Email</th>
+                        <th class="p-4">Joined</th>
+                        <th class="p-4">Status</th>
+                        <th class="p-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm">
+                    <tr *ngFor="let user of users" class="border-t" style="border-color: var(--border);">
+                        <td class="p-4 font-semibold">{{ user.displayName }}</td>
+                        <td class="p-4">{{ user.email }}</td>
+                        <td class="p-4 text-secondary">{{ user.createdAt | date }}</td>
+                        <td class="p-4">
+                            <span class="badge" [class.bg-red-100]="user.isSuspended"
+                                [class.text-red-800]="user.isSuspended">
+                                {{ user.isSuspended ? 'Suspended' : 'Active' }}
+                            </span>
+                        </td>
+                        <td class="p-4 text-right">
+                            <button (click)="toggleUserSuspension(user)" class="btn btn-outline py-1 px-3 text-xs"
+                                [class.text-red-600]="!user.isSuspended" [class.border-red-200]="!user.isSuspended">
+                                {{ user.isSuspended ? 'Reactivate' : 'Suspend' }}
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Simple Reject Modal (Inline for now) -->
+<div *ngIf="selectedListingId" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="card max-w-md w-full">
+        <h3 class="mb-4">Reject Listing</h3>
+        <p class="text-secondary mb-4">Please provide a reason for rejection. This will be visible to the seller.</p>
+        <textarea [(ngModel)]="rejectReason" class="input mb-4" rows="4" placeholder="Reason..."></textarea>
+        <div class="flex justify-end gap-2">
+            <button (click)="selectedListingId = null" class="btn btn-outline">Cancel</button>
+            <button (click)="rejectListing()" class="btn btn-primary bg-red-600">Confirm Rejection</button>
+        </div>
+    </div>
+</div>

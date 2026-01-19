@@ -1,0 +1,39 @@
+<nav class="navbar glass">
+  <div class="container flex justify-between items-center" style="height: 64px;">
+    <!-- Logo -->
+    <a routerLink="/" class="logo flex items-center gap-2">
+      <span style="font-size: 1.5rem; font-weight: 800; letter-spacing: -0.05em;" class="text-gradient">
+        VehicleMarket
+      </span>
+    </a>
+
+    <!-- Desktop Menu -->
+    <div class="hidden md:flex items-center gap-8">
+      <a routerLink="/listings" routerLinkActive="text-primary" class="nav-link">Browse Cars</a>
+      <a routerLink="/sell" class="nav-link">Sell Your Car</a>
+      <a *ngIf="(currentUser$ | async)?.isAdmin" routerLink="/admin" class="nav-link text-red-500 font-bold">Admin</a>
+    </div>
+
+    <!-- Auth Actions -->
+    <div class="flex items-center gap-4">
+      <ng-container *ngIf="isAuthenticated$ | async; else guestTemplate">
+        <a routerLink="/messages" class="nav-link hidden md:block">Messages</a>
+        <a routerLink="/dashboard" class="btn btn-primary" style="padding: 0.5rem 1rem;">
+          Dashboard
+        </a>
+        <button (click)="logout()" class="btn btn-outline" style="padding: 0.5rem 1rem;">
+          Logout
+        </button>
+      </ng-container>
+
+      <ng-template #guestTemplate>
+        <a routerLink="/auth/login" class="btn btn-outline" style="padding: 0.5rem 1rem;">
+          Log In
+        </a>
+        <a routerLink="/auth/register" class="btn btn-primary" style="padding: 0.5rem 1rem;">
+          Sign Up
+        </a>
+      </ng-template>
+    </div>
+  </div>
+</nav>

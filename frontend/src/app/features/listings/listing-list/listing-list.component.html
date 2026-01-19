@@ -1,0 +1,102 @@
+<div class="container section">
+    <div class="flex flex-col md:flex-row gap-8">
+
+        <!-- Sidebar Filters -->
+        <aside class="w-full md:w-64 flex-shrink-0">
+            <div class="card sticky top-4">
+                <h3 class="mb-4">Filters</h3>
+
+                <div class="flex flex-col gap-4">
+                    <div>
+                        <label class="block mb-2 text-sm text-secondary">Search</label>
+                        <input type="text" [(ngModel)]="filter.search" (keyup.enter)="applyFilters()" class="input"
+                            placeholder="Keywords...">
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-sm text-secondary">Make</label>
+                        <input type="text" [(ngModel)]="filter.make" class="input" placeholder="Toyota">
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-sm text-secondary">Price Range</label>
+                        <div class="flex gap-2">
+                            <input type="number" [(ngModel)]="filter.priceMin" class="input" placeholder="Min">
+                            <input type="number" [(ngModel)]="filter.priceMax" class="input" placeholder="Max">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block mb-2 text-sm text-secondary">Sort By</label>
+                        <select [(ngModel)]="filter.sortBy" class="input">
+                            <option value="newest">Newest</option>
+                            <option value="price_asc">Price: Low to High</option>
+                            <option value="price_desc">Price: High to Low</option>
+                            <option value="year_desc">Year: Newest</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2 mt-2">
+                        <button (click)="applyFilters()" class="btn btn-primary w-full">Apply Filters</button>
+                        <button (click)="clearFilters()" class="btn btn-outline w-full">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-grow">
+            <div class="flex justify-between items-center mb-6">
+                <h2>{{ totalCount }} Vehicles Found</h2>
+            </div>
+
+            <div *ngIf="isLoading" class="text-center py-12">
+                <p>Loading vehicles...</p>
+            </div>
+
+            <div *ngIf="!isLoading && listings.length === 0" class="text-center py-12 bg-surface rounded-md">
+                <p class="text-xl">No vehicles found matching your criteria.</p>
+                <button (click)="clearFilters()" class="btn btn-primary mt-4">Clear Filters</button>
+            </div>
+
+            <div *ngIf="!isLoading && listings.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div *ngFor="let listing of listings"
+                    class="card p-0 overflow-hidden cursor-pointer h-full flex flex-col"
+                    [routerLink]="['/listings', listing.id]">
+                    <div class="aspect-video bg-gray-200 relative">
+                        <img *ngIf="listing.photos?.length" [src]="listing.photos[0]" alt="{{listing.title}}"
+                            class="w-full h-full object-cover">
+                        <div *ngIf="!listing.photos?.length"
+                            class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                            No Photo
+                        </div>
+                        <div class="absolute top-2 right-2 badge bg-surface-hover">
+                            {{ listing.condition }}
+                        </div>
+                    </div>
+
+                    <div class="p-4 flex flex-col flex-grow">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h3 class="text-lg font-bold mb-0 leading-tight">{{ listing.year }} {{ listing.make }}
+                                    {{ listing.model }}</h3>
+                                <p class="text-sm text-secondary">{{ listing.title }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-auto">
+                            <h4 class="text-xl font-bold text-primary mb-2">${{ listing.price | number }}</h4>
+
+                            <div class="flex justify-between text-sm text-secondary border-t pt-3"
+                                style="border-color: var(--border);">
+                                <span>{{ listing.mileage | number }} mi</span>
+                                <span>{{ listing.transmission }}</span>
+                                <span>{{ listing.fuelType }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

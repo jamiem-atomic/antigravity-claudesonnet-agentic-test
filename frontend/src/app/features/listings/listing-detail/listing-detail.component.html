@@ -1,0 +1,131 @@
+<div class="container section" *ngIf="listing; else loading">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- Left Column: Gallery -->
+        <div class="lg:col-span-2">
+            <div class="card p-0 overflow-hidden mb-4">
+                <div class="aspect-video bg-gray-200 relative">
+                    <img *ngIf="listing.photos?.length" [src]="listing.photos[activePhotoIndex]"
+                        class="w-full h-full object-cover">
+                    <div *ngIf="!listing.photos?.length"
+                        class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                        No Photos Available
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thumbnails -->
+            <div class="flex gap-2 overflow-x-auto pb-2" *ngIf="listing.photos?.length && listing.photos.length > 1">
+                <button *ngFor="let photo of listing.photos; let i = index" (click)="setActivePhoto(i)"
+                    class="w-24 h-16 flex-shrink-0 rounded border-2 overflow-hidden transition-all"
+                    [class.border-primary]="i === activePhotoIndex" [class.border-transparent]="i !== activePhotoIndex">
+                    <img [src]="photo" class="w-full h-full object-cover">
+                </button>
+            </div>
+
+            <div class="mt-8">
+                <h3 class="mb-4">Description</h3>
+                <p class="whitespace-pre-line text-lg text-secondary">{{ listing.description }}</p>
+            </div>
+
+            <div class="mt-8">
+                <h3 class="mb-4">Vehicle Details</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div class="p-3 bg-surface rounded">
+                        <span class="block text-sm text-secondary">Make</span>
+                        <span class="font-semibold">{{ listing.make }}</span>
+                    </div>
+                    <div class="p-3 bg-surface rounded">
+                        <span class="block text-sm text-secondary">Model</span>
+                        <span class="font-semibold">{{ listing.model }}</span>
+                    </div>
+                    <div class="p-3 bg-surface rounded">
+                        <span class="block text-sm text-secondary">Year</span>
+                        <span class="font-semibold">{{ listing.year }}</span>
+                    </div>
+                    <div class="p-3 bg-surface rounded">
+                        <span class="block text-sm text-secondary">Mileage</span>
+                        <span class="font-semibold">{{ listing.mileage | number }} mi</span>
+                    </div>
+                    <div class="p-3 bg-surface rounded">
+                        <span class="block text-sm text-secondary">Fuel Type</span>
+                        <span class="font-semibold">{{ listing.fuelType }}</span>
+                    </div>
+                    <div class="p-3 bg-surface rounded">
+                        <span class="block text-sm text-secondary">Transmission</span>
+                        <span class="font-semibold">{{ listing.transmission }}</span>
+                    </div>
+                    <div class="p-3 bg-surface rounded">
+                        <span class="block text-sm text-secondary">Body Type</span>
+                        <span class="font-semibold">{{ listing.bodyType }}</span>
+                    </div>
+                    <div class="p-3 bg-surface rounded">
+                        <span class="block text-sm text-secondary">Condition</span>
+                        <span class="font-semibold">{{ listing.condition }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Info & Action -->
+        <div class="lg:col-span-1">
+            <div class="card sticky top-4">
+                <h1 class="text-2xl mb-2">{{ listing.year }} {{ listing.make }} {{ listing.model }}</h1>
+                <div class="text-3xl font-bold text-primary mb-6">${{ listing.price | number }}</div>
+
+                <div class="py-4 border-t border-b mb-6" style="border-color: var(--border);">
+                    <h4 class="mb-2">Seller Information</h4>
+                    <div class="flex items-center gap-3 mb-2">
+                        <div
+                            class="w-10 h-10 rounded-full bg-surface-hover flex items-center justify-center font-bold text-primary">
+                            {{ listing.sellerName.charAt(0) }}
+                        </div>
+                        <div>
+                            <div class="font-semibold">{{ listing.sellerName }}</div>
+                            <div class="text-sm text-secondary">Member since {{ listing.createdAt | date:'yyyy' }}</div>
+                        </div>
+                    </div>
+                    <div class="text-sm text-secondary flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        {{ listing.location }}
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <ng-container *ngIf="isAuthenticated">
+                        <button *ngIf="!isMessaging" (click)="isMessaging = true" class="btn btn-primary w-full">Message
+                            Seller</button>
+                        <div *ngIf="isMessaging" class="flex flex-col gap-2 p-3 bg-surface rounded border"
+                            style="border-color: var(--border);">
+                            <textarea [(ngModel)]="initialMessage" class="input text-sm" rows="3"
+                                placeholder="Write a message..."></textarea>
+                            <div class="flex gap-2">
+                                <button (click)="contactSeller()"
+                                    class="btn btn-primary flex-1 py-1 text-sm">Send</button>
+                                <button (click)="isMessaging = false"
+                                    class="btn btn-outline py-1 text-sm">Cancel</button>
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <a *ngIf="!isAuthenticated" routerLink="/auth/login" class="btn btn-primary w-full">Login to
+                        Contact</a>
+
+                    <button class="btn btn-outline w-full">Share Listing</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #loading>
+    <div class="container section text-center py-20">
+        <p class="text-xl text-secondary">Loading vehicle details...</p>
+    </div>
+</ng-template>

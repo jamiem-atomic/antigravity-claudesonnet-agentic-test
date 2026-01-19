@@ -1,0 +1,32 @@
+<app-navbar></app-navbar>
+<main class="min-h-[80vh]">
+  <router-outlet></router-outlet>
+</main>
+<footer class="bg-surface border-t mt-20 py-12" style="border-color: var(--border);">
+  <div class="container grid grid-cols-1 md:grid-cols-4 gap-8">
+    <div class="col-span-1 md:col-span-2">
+      <h2 class="text-gradient text-2xl mb-4">VehicleMarket</h2>
+      <p class="text-secondary text-sm max-w-xs">Connecting buyers and sellers of premium vehicles worldwide. Experience
+        the future of automotive marketplace.</p>
+    </div>
+    <div>
+      <h4 class="font-bold mb-4">Marketplace</h4>
+      <ul class="flex flex-col gap-2 text-sm text-secondary">
+        <li><a routerLink="/listings" class="hover:text-primary transition-colors">Browse Cars</a></li>
+        <li><a routerLink="/sell" class="hover:text-primary transition-colors">Sell Your Car</a></li>
+        <li><a routerLink="/auth/register" class="hover:text-primary transition-colors">Create Account</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-bold mb-4">Company</h4>
+      <ul class="flex flex-col gap-2 text-sm text-secondary">
+        <li><a routerLink="/about" class="hover:text-primary transition-colors">About Us</a></li>
+        <li><a routerLink="/help" class="hover:text-primary transition-colors">Help Center</a></li>
+        <li><a routerLink="/privacy" class="hover:text-primary transition-colors">Privacy Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container border-t mt-12 pt-8 text-center text-xs text-secondary" style="border-color: var(--border);">
+    &copy; 2026 VehicleMarket. All rights reserved.
+  </div>
+</footer>

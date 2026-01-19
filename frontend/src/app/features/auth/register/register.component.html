@@ -1,0 +1,41 @@
+<div class="flex items-center justify-center min-h-screen"
+    style="min-height: calc(100vh - 64px - 100px); padding: 2rem;">
+    <div class="card" style="width: 100%; max-width: 400px;">
+        <h2 class="text-center mb-8">Create an Account</h2>
+
+        <div *ngIf="error" class="bg-red-100 text-red-700 p-3 rounded mb-4"
+            style="background: hsla(var(--danger-h), var(--danger-s), 90%, 1); color: hsla(var(--danger-h), var(--danger-s), 30%, 1); padding: 0.75rem; border-radius: var(--radius-sm); margin-bottom: 1rem;">
+            {{ error }}
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+            <div class="form-group">
+                <label for="displayName"
+                    style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Full Name</label>
+                <input id="displayName" type="text" formControlName="displayName" class="input" placeholder="John Doe">
+            </div>
+
+            <div class="form-group">
+                <label for="email" style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Email
+                    Address</label>
+                <input id="email" type="email" formControlName="email" class="input" placeholder="you@example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="password"
+                    style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Password</label>
+                <input id="password" type="password" formControlName="password" class="input"
+                    placeholder="Min 8 characters">
+            </div>
+
+            <button type="submit" class="btn btn-primary" [disabled]="registerForm.invalid || isLoading"
+                style="margin-top: 1rem;">
+                {{ isLoading ? 'Creating Account...' : 'Sign Up' }}
+            </button>
+        </form>
+
+        <div class="text-center mt-6" style="margin-top: 1.5rem; font-size: 0.875rem;">
+            <p>Already have an account? <a routerLink="/auth/login">Log in</a></p>
+        </div>
+    </div>
+</div>

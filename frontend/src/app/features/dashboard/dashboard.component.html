@@ -1,0 +1,114 @@
+<div class="container section">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl">Dashboard</h1>
+        <a routerLink="/sell" class="btn btn-primary">Create New Listing</a>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex border-b mb-8" style="border-color: var(--border);">
+        <button (click)="setActiveTab('listings')" class="px-6 py-3 font-semibold transition-colors border-b-2"
+            [class.border-primary]="activeTab === 'listings'" [class.text-primary]="activeTab === 'listings'"
+            [class.border-transparent]="activeTab !== 'listings'" [class.text-secondary]="activeTab !== 'listings'">
+            My Listings
+        </button>
+        <button (click)="setActiveTab('favourites')" class="px-6 py-3 font-semibold transition-colors border-b-2"
+            [class.border-primary]="activeTab === 'favourites'" [class.text-primary]="activeTab === 'favourites'"
+            [class.border-transparent]="activeTab !== 'favourites'" [class.text-secondary]="activeTab !== 'favourites'">
+            Favourites
+        </button>
+        <button (click)="setActiveTab('profile')" class="px-6 py-3 font-semibold transition-colors border-b-2"
+            [class.border-primary]="activeTab === 'profile'" [class.text-primary]="activeTab === 'profile'"
+            [class.border-transparent]="activeTab !== 'profile'" [class.text-secondary]="activeTab !== 'profile'">
+            Profile
+        </button>
+    </div>
+
+    <!-- Content -->
+    <div *ngIf="activeTab === 'profile' && (currentUser$ | async) as user">
+        <div class="card max-w-2xl mx-auto">
+            <h2 class="mb-6">Profile Information</h2>
+            <div class="flex flex-col gap-4">
+                <div class="flex justify-between border-b py-2" style="border-color: var(--border);">
+                    <span class="text-secondary">Full Name</span>
+                    <span class="font-semibold">{{ user.displayName }}</span>
+                </div>
+                <div class="flex justify-between border-b py-2" style="border-color: var(--border);">
+                    <span class="text-secondary">Email Address</span>
+                    <span class="font-semibold">{{ user.email }}</span>
+                </div>
+                <div class="flex justify-between border-b py-2" style="border-color: var(--border);">
+                    <span class="text-secondary">Joined</span>
+                    <span class="font-semibold">{{ user.createdAt | date:'longDate' }}</span>
+                </div>
+                <div class="flex justify-between py-2">
+                    <span class="text-secondary">Account Type</span>
+                    <span class="badge" [class.bg-primary]="user.isAdmin">{{ user.isAdmin ? 'Administrator' : 'User'
+                        }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="activeTab === 'listings'">
+        <div *ngIf="myListings.length === 0 && !isLoading" class="text-center py-12 bg-surface rounded">
+            <p class="text-secondary mb-4">You haven't listed any vehicles yet.</p>
+            <a routerLink="/sell" class="btn btn-primary">Sell Your Car</a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div *ngFor="let listing of myListings" class="card p-0 overflow-hidden flex flex-col">
+                <div class="aspect-video bg-gray-200 relative">
+                    <img *ngIf="listing.photos?.length" [src]="listing.photos[0]" class="w-full h-full object-cover">
+                    <div class="absolute top-2 right-2 badge" [ngClass]="{
+                 'bg-green-100 text-green-800': listing.status === 'Published',
+                 'bg-yellow-100 text-yellow-800': listing.status === 'Draft',
+                 'bg-red-100 text-red-800': listing.status === 'Rejected'
+               }">
+                        {{ listing.status }}
+                    </div>
+                </div>
+                <div class="p-4 flex-grow">
+                    <h3 class="text-lg mb-1">{{ listing.year }} {{ listing.make }} {{ listing.model }}</h3>
+                    <p class="text-primary font-bold mb-4">${{ listing.price | number }}</p>
+
+                    <div class="flex gap-2 mt-auto">
+                        <a [routerLink]="['/listings', listing.id, 'edit']"
+                            class="btn btn-outline flex-1 py-2 text-sm">Edit</a>
+                        <a [routerLink]="['/listings', listing.id]" class="btn btn-outline flex-1 py-2 text-sm">View</a>
+                        <!-- Delete button could be here but I put logic in component, let's allow it -->
+                        <button (click)="deleteListing(listing.id)"
+                            class="btn btn-outline py-2 px-3 text-red-600 border-red-200 hover:bg-red-50">
+                            Trash
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="activeTab === 'favourites'">
+        <div *ngIf="favourites.length === 0" class="text-center py-12 bg-surface rounded">
+            <p class="text-secondary">No favourite listings yet.</p>
+            <a routerLink="/listings" class="btn btn-outline mt-4">Browse Cars</a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div *ngFor="let listing of favourites" class="card p-0 overflow-hidden flex flex-col">
+                <div class="aspect-video bg-gray-200 relative">
+                    <img *ngIf="listing.photos?.length" [src]="listing.photos[0]" class="w-full h-full object-cover">
+                </div>
+                <div class="p-4 flex-grow">
+                    <h3 class="text-lg mb-1">{{ listing.year }} {{ listing.make }} {{ listing.model }}</h3>
+                    <p class="text-primary font-bold mb-4">${{ listing.price | number }}</p>
+
+                    <div class="flex gap-2 mt-auto">
+                        <a [routerLink]="['/listings', listing.id]" class="btn btn-primary flex-1 py-2 text-sm">View</a>
+                        <button (click)="removeFavourite(listing.id)" class="btn btn-outline py-2 px-3 text-red-600">
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,125 @@
+<div class="container section">
+    <div class="card max-w-3xl mx-auto">
+        <h2 class="mb-6">{{ isEditMode ? 'Edit Listing' : 'Sell Your Car' }}</h2>
+
+        <div *ngIf="error" class="bg-red-100 text-red-700 p-3 rounded mb-4">
+            {{ error }}
+        </div>
+
+        <form [formGroup]="listingForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-6">
+
+            <!-- Basic Info -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="form-group md:col-span-2">
+                    <label class="block mb-2 text-sm text-secondary">Listing Title</label>
+                    <input formControlName="title" type="text" class="input" placeholder="e.g. 2020 Toyota Camry XSE">
+                </div>
+
+                <div class="form-group">
+                    <label class="block mb-2 text-sm text-secondary">Price ($)</label>
+                    <input formControlName="price" type="number" class="input" placeholder="25000">
+                </div>
+
+                <div class="form-group">
+                    <label class="block mb-2 text-sm text-secondary">Location</label>
+                    <input formControlName="location" type="text" class="input" placeholder="City, State">
+                </div>
+            </div>
+
+            <!-- Vehicle Specs -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="form-group">
+                    <label class="block mb-2 text-sm text-secondary">Make</label>
+                    <input formControlName="make" type="text" class="input" placeholder="Toyota">
+                </div>
+                <div class="form-group">
+                    <label class="block mb-2 text-sm text-secondary">Model</label>
+                    <input formControlName="model" type="text" class="input" placeholder="Camry">
+                </div>
+                <div class="form-group">
+                    <label class="block mb-2 text-sm text-secondary">Year</label>
+                    <input formControlName="year" type="number" class="input">
+                </div>
+
+                <div class="form-group">
+                    <label class="block mb-2 text-sm text-secondary">Mileage</label>
+                    <input formControlName="mileage" type="number" class="input">
+                </div>
+
+                <div class="form-group">
+                    <label class="block mb-2 text-sm text-secondary">Fuel Type</label>
+                    <select formControlName="fuelType" class="input">
+                        <option value="Petrol">Petrol</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="Electric">Electric</option>
+                        <option value="Hybrid">Hybrid</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="block mb-2 text-sm text-secondary">Transmission</label>
+                    <select formControlName="transmission" class="input">
+                        <option value="Automatic">Automatic</option>
+                        <option value="Manual">Manual</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="block mb-2 text-sm text-secondary">Body Type</label>
+                    <select formControlName="bodyType" class="input">
+                        <option value="Sedan">Sedan</option>
+                        <option value="SUV">SUV</option>
+                        <option value="Truck">Truck</option>
+                        <option value="Coupe">Coupe</option>
+                        <option value="Hatchback">Hatchback</option>
+                        <option value="Convertible">Convertible</option>
+                        <option value="Van">Van</option>
+                        <option value="Wagon">Wagon</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="block mb-2 text-sm text-secondary">Condition</label>
+                    <select formControlName="condition" class="input">
+                        <option value="Used">Used</option>
+                        <option value="New">New</option>
+                        <option value="CertifiedPreOwned">Certified Pre-Owned</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+                <label class="block mb-2 text-sm text-secondary">Description</label>
+                <textarea formControlName="description" rows="5" class="input"
+                    placeholder="Describe your vehicle..."></textarea>
+            </div>
+
+            <!-- Photos -->
+            <div class="form-group">
+                <label class="block mb-2 text-sm text-secondary">Photos (URLs)</label>
+                <div class="flex gap-2 mb-2">
+                    <input type="text" [(ngModel)]="photoUrlInput" [ngModelOptions]="{standalone: true}" class="input"
+                        placeholder="https://example.com/image.jpg">
+                    <button type="button" (click)="addPhoto()" class="btn btn-outline">Add</button>
+                </div>
+
+                <div class="flex flex-wrap gap-2 mt-2">
+                    <div *ngFor="let photo of listingForm.get('photos')?.value; let i = index"
+                        class="relative w-24 h-16 rounded overflow-hidden border border-gray-300">
+                        <img [src]="photo" class="w-full h-full object-cover">
+                        <button type="button" (click)="removePhoto(i)"
+                            class="absolute top-0 right-0 bg-red-500 text-white w-5 h-5 flex items-center justify-center text-xs">×</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-4 mt-4">
+                <a routerLink="/" class="btn btn-outline">Cancel</a>
+                <button type="submit" class="btn btn-primary" [disabled]="listingForm.invalid || isLoading">
+                    {{ isLoading ? 'Saving...' : (isEditMode ? 'Update Listing' : 'Create Listing') }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
